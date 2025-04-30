@@ -118,6 +118,12 @@
                 span.style.color = '#ff0000';
                 span.innerText = 'Your email cannot be empty';
                 document.getElementById('email').appendChild(span);
+            }else if (!email.includes('@')) {
+               isValid = false;
+               let span = document.createElement('span');
+                 span.style.color = '#ff0000';
+                 span.innerText = 'Your email must include @';
+                document.getElementById('email').appendChild(span);
             }
 
             // Validate Password
