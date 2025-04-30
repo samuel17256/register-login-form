@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration and Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Registration Form</h1>
+ 
+            <!-- Registration Form -->
+            <form id="registerForm">
+                <div id="fullname">
+                    <label for="name">Name:</label>
+                    <input type="text" name="fullname">
+                </div>
+                <div id="phoneNumber">
+                    <label for="phonenumber">Phone Number:</label>
+                    <input type="number" name="phonenumber">
+                </div>
+                <div id="email">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div id="password">
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long and include at least one number, one lowercase letter, and one uppercase letter.">
+                    <button id="showPass">Show</button>
+                </div>
+                <div id="dob">
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" name="dob">
+                </div>
+                <button id="submit">Submit</button>
+                <!-- <button id="reset">reset</button> -->
+            </form>
+            <div id="result"></div>
+        </div>
+
+
+        <div class="cardLog">
+            <h1 class="loginHead">Login Form</h1>
+        
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div id="loginEmail">
+                    <label for="email">Email</label>
+                    <input type="email" name="loginEmail">
+                </div>
+                <div id="loginPassword">
+                    <label for="password">Password</label>
+                    <input type="password" name="loginPassword">
+                </div>
+                <button id="loginSubmit">Login</button>
+            </form>
+        
+            <div id="loginResult"></div>
+        </div>
+    </div>
+   
+
+    
+    <script>
+        // Registration Form Logic
+        let btn = document.querySelector('#submit');
+        let registeredUser = {}; 
+
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            let spans = document.querySelectorAll('span');
+            if (spans.length > 0) {
+                spans.forEach((span) => {
+                    span.remove();
+                });
+            }
+
+            let isValid = true;
+            let fullname = document.querySelector('input[name=fullname]').value;
+            let phoneNumber=document.querySelector('input[name=phonenumber]').value
+            let email = document.querySelector('input[name=email]').value;
+            let password = document.querySelector('input[name=password]').value;
+            let dob = document.querySelector('input[name=dob]').value;
+
+            // Validate Fullname
+            if (!fullname || fullname === "") {
+                isValid = false;
+                let span = document.createElement('span');
+                span.style.color = '#ff0000';
+                span.innerText = 'Your name cannot be empty';
+                document.getElementById('fullname').appendChild(span);
+            }
+
+
+            //validate phonenumber
+            if(!phoneNumber || phoneNumber === ""){
+                isValid=false;
+                let span=document.createElement('span')
+                span.style.color='#ff0000'
+                span.innerText='your number cannot be empty'
+                document.getElementById('phoneNumber').appendChild(span)
+            }
+
+            // Validate Email
+            if (!email || email === "") {
+                isValid = false;
+                let span = document.createElement('span');
+                span.style.color = '#ff0000';
+                span.innerText = 'Your email cannot be empty';
+                document.getElementById('email').appendChild(span);
+            }
+
+            // Validate Password
+            if (!password || password === "") {
+                isValid = false;
+                let span = document.createElement('span');
+                span.style.color = '#ff0000';
+                span.innerText = 'Your password cannot be empty';
+                document.getElementById('password').appendChild(span);
+            } else {
+                let passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+                if (!passwordPattern.test(password)) {
+                    isValid = false;
+                    let span = document.createElement('span');
+                    span.style.color = '#ff0000';
+                    span.innerText = 'Password must be at least 8 characters long and include at least one number, one lowercase letter, and one uppercase letter.';
+                    document.getElementById('password').appendChild(span);
+                }
+            }
+
+            // Validate Date of Birth
+            if (!dob || dob === "") {
+                isValid = false;
+                let span = document.createElement('span');
+                span.style.color = '#ff0000';
+                span.innerText = 'Date of Birth cannot be empty';
+                document.getElementById('dob').appendChild(span);
+            } else {
+                let dobDate = new Date(dob);
+                let today = new Date();
+                let age = today.getFullYear() - dobDate.getFullYear();
+                let month = today.getMonth() - dobDate.getMonth();
+                if (month < 0 || (month === 0 && today.getDate() < dobDate.getDate())) {
+                    age--;
+                }
+                if (age < 18) {
+                    isValid = false;
+                    let span = document.createElement('span');
+                    span.style.color = '#ff0000';
+                    span.innerText = 'You must be at least 18 years old to register.';
+                    document.getElementById('dob').appendChild(span);
+                }
+            }
+
+            // If all validations pass
+            if (isValid) {
+                registeredUser = { fullname,phoneNumber, email, password, dob };
+            
+                document.getElementById('result').innerHTML = `<div style="padding:20px 0px;">
+                    <h2>You have successfully register.</h2>
+                <ul style="list-style:none; padding:2px 0px;">
+                    <li>Name: ${fullname}</li>
+                    <li>Phone Number: ${phoneNumber}</li>
+                    <li>Email: ${email}</li>
+                     <li>Password: ${password}</li>
+                    <li>Date of Birth: ${dob}</li>
+                </ul>
+                </div>`;
+
+                document.querySelector('#registerForm').reset();
+
+            } else {
+                document.getElementById('result').innerHTML = `<span style='color:#ff0000'>Please fill all fields correctly</span>`;
+            }
+        });
+
+        // Login Form Logic
+        let loginBtn = document.querySelector('#loginSubmit');
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let loginEmail = document.querySelector('input[name=loginEmail]').value;
+            let loginPassword = document.querySelector('input[name=loginPassword]').value;
+            //validate login email 
+            if(!loginEmail || loginEmail === ""){
+                isValid=false;
+                let span=document.createElement('span');
+                span.style.color='#ff0000';
+                span.innerText='Login email must be fill'
+                document.getElementById('loginEmail').appendChild(span)
+            }
+
+            //validate log in password
+            if(!loginPassword || loginPassword === ""){
+                isValid=false;
+                let span=document.createElement('span');
+                span.style.color='#ff0000';
+                span.innerText='Login password must be fill'
+                document.getElementById('loginPassword').appendChild(span)
+            }
+
+            //login validation pass
+            if (loginEmail === registeredUser.email && loginPassword === registeredUser.password) {
+                document.getElementById('loginResult').innerHTML = `<div style="padding:10px;">
+                <p>Welcome, ${registeredUser.fullname}!</p>
+                </div>
+                `;
+                document.querySelector('#loginForm').reset();
+                alert('login successfully');
+                return;
+            } else {
+                document.getElementById('loginResult').innerHTML = `<span style='color:#ff0000'>Enter a valid email or password</span>`;
+            }
+        });
+
+        // Show/Hide Password Logic
+        let showPass = document.querySelector("#showPass");
+        showPass.addEventListener('click', (e) => {
+            e.preventDefault();
+            let password = document.querySelector('input[name=password]');
+            if (password.type === "password") {
+                showPass.innerText = 'Hide';
+                password.type = 'text';
+            } else {
+                showPass.innerText = 'Show';
+                password.type = 'password';
+            }
+        });
+    </script>
+</body>
+</html>
